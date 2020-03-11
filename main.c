@@ -41,7 +41,7 @@ void aide() {
 
     printf("Vos navires sont représentés sous forme de cercles accrochés les uns aux autres.\n\n");
     printf("Si vous ratez une attaque, une croix sera placé dans la grille adverse à l'endroit visé.\n\n");
-    printf("Si vous touchez un navire, un cercle sera placé à l'endroit de l'impact.\n\n");
+    printf("Si vous touchez un navire, un cercle sera placé à l'endroit de l'impact.\n\n\n\n");
 
     system("Pause");
 }
@@ -64,41 +64,46 @@ void jeu() {
     title();
 }
 
+int getInput() {
+    int choix;
+    printf("Choix : ");
+    fflush(stdin);
+    scanf("%d", &choix);
+    return choix;
+}
+
 int main() {
 
-    int choix;
+
 
     SetConsoleOutputCP(65001);
 
     menu();
 
-    printf("Choix : ");
-    fflush(stdin);
-    scanf("%d", &choix);
+   getInput();
 
-    //while(choix != 5) {
-        switch(choix) {
-            case 1:
 
-                break;
-            case 2:
-                system("cls");
-                printf("Désolé, mais cette fonctionalité n'est pas encore disponible.\n");
-                system("Pause");
-                break;
-            case 3:
-                printf("Désolé, mais cette fonctionalité n'est pas encore disponible.\n");
-                system("Pause");
-                break;
-            case 4:
-                aide();
-                break;
-            default:
-                printf("Veuillez entrer un choix valide.\n");
-                menu();
-                break;
+    switch(choix) {
+        case 1:
+            break;
+        case 2:
+            system("cls");
+            printf("Désolé, mais cette fonctionalité n'est pas encore disponible.\n\n");
+            system("Pause");
+            break;
+        case 3:
+            printf("Désolé, mais cette fonctionalité n'est pas encore disponible.\n\n");
+            system("Pause");
+            break;
+        case 4:
+            aide();
+            break;
+        default:
+            printf("Veuillez entrer un choix valide.\n");
+            menu();
+            break;
         }
-    //}
+
 
 
     //system("Pause");
