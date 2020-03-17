@@ -5,37 +5,56 @@
 
 #pragma execution_character_set( "utf-8" )
 
+char frontGrid[10][10] =
+        {
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+        };
+
 char gridValues[10][10] =
         {
                           {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', 'x', 'x', 'x', ' ', 'x', 'x', 'x', ' ', ' '},
+                          {' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', ' '},
                           {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', ' ', ' ', ' ', 'x', 'x', 'x', 'x', ' ', ' '},
-                          {' ', 'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', 'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', 'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', 'x', ' ', ' ', 'x', 'x', ' ', ' ', ' ', ' '},
-                          {' ', 'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                          {' ', ' ', ' ', ' ', 'X', 'X', 'X', 'X', ' ', ' '},
+                          {' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                          {' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                          {' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                          {' ', 'X', ' ', ' ', 'X', 'X', ' ', ' ', ' ', ' '},
+                          {' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                           {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
         };
 
 int choix;
-char colone[10] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
-int number[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 char colonsInChar;
 int colonsInNumber;
 int lines;
+boolean program = 1;
+int counter = 0;
 
 
 // TODO - Fix Choice  -----------X
-// TODO - Do a better game interface ---------
-// TODO - Search about invisible characters for the boats ---------
-// TODO - fix the help page
+// TODO - Better game interface ---------X
+// TODO - Search about invisible characters for the boats ---------X
+// TODO - fix the help page -------------X
+// TODO - Win  ---------------
+// TODO - error -------------X
+// TODO - Commentaires
 
 void title() {
-    printf("\n\n\n<----------------------->\n");
+    printf("\033[0;36m"); //pour avoir une couleur cyan
+    printf("\n<----------------------->\n");
     printf("<=== Bataille navale ===>\n");
     printf("<----------------------->\n\n\n");
+    printf("\033[0m"); //Pour remmetre la couleur par default
 }
 
 void menu() {
@@ -56,35 +75,31 @@ void help() {
            "grilles personnelles et tentent de couler les navires de l'autre \nen choisissant la cellule à attaquer.\n\n");
 
     printf("Il y a différents types de navires:\n\n");
-
+    printf("\033[0;36m"); //pour avoir une couleur cyan
     printf("1 Porte-avion (5 cases)\n"
            "1 Croiseur (4 cases)\n"
            "2 Contre-torpilleur (3 cases)\n"
-           "1 torpilleur (2 cases)\n\n\n\n\n");
-
-    printf("Vos navires sont représentés sous forme de cercles accrochés les uns aux autres.\n\n");
-    printf("Si vous ratez une attaque, une croix sera placé dans la grille adverse à l'endroit visé.\n\n");
-    printf("Si vous touchez un navire, un cercle sera placé à l'endroit de l'impact.\n\n\n\n");
+           "1 torpilleur (2 cases)\n\n\n");
+    printf("\033[0m"); //Pour remmetre la couleur par default
+    printf("Lorsque vous touchez un navire, une croix apparaît à l'emplacement, cependant, si vous ratez\n"
+                    "un cercle apparaîtra.\n");
+    printf("Vous gagnez lorsque tous les navires sont coulés.\n\n");
 
     system("Pause");
 }
 
 void grid() {
-    printf("       A   B   C   D   E   F   G   H   I   J       \n");
-    printf("   0  [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]      \n" );
-    printf("   1  [ ] [%c] [%c] [%c] [ ] [%c] [%c] [%c] [ ] [ ]\n", gridValues[1][1], gridValues[1][2], gridValues[1][3], gridValues[1][5], gridValues[1][6], gridValues[1][7]);
-    printf("   2  [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]      \n" );
-    printf("   3  [ ] [ ] [ ] [ ] [%c] [%c] [%c] [%c] [ ] [ ]  \n", gridValues[3][4], gridValues[3][5], gridValues[3][6], gridValues[3][7]);
-    printf("   4  [ ] [%c] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]     \n", gridValues[4][1]);
-    printf("   5  [ ] [%c] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]     \n", gridValues[5][1]);
-    printf("   6  [ ] [%c] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]     \n", gridValues[6][1]);
-    printf("   7  [ ] [%c] [ ] [ ] [%c] [%c] [ ] [ ] [ ] [ ]   \n", gridValues[7][1], gridValues[7][4], gridValues[7][5]);
-    printf("   8  [ ] [%c] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]     \n", gridValues[8][1]);
-    printf("   9  [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]      \n");
-}
-
-char abdc() {
-
+    printf("       A   B   C   D   E   F   G   H   I   J      \n");
+    printf("   0  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[0][0], frontGrid[0][1], frontGrid[0][2], frontGrid[0][3], frontGrid[0][4], frontGrid[0][5], frontGrid[0][6], frontGrid[0][7], frontGrid[0][8], frontGrid[0][9]);
+    printf("   1  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[1][0], frontGrid[1][1], frontGrid[1][2], frontGrid[1][3], frontGrid[1][4], frontGrid[1][5], frontGrid[1][6], frontGrid[1][7], frontGrid[1][8], frontGrid[1][9]);
+    printf("   2  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[2][0], frontGrid[2][1], frontGrid[2][2], frontGrid[2][3], frontGrid[2][4], frontGrid[2][5], frontGrid[2][6], frontGrid[2][7], frontGrid[2][8], frontGrid[2][9]);
+    printf("   3  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[3][0], frontGrid[3][1], frontGrid[3][2], frontGrid[3][3], frontGrid[3][4], frontGrid[3][5], frontGrid[3][6], frontGrid[3][7], frontGrid[3][8], frontGrid[3][9]);
+    printf("   4  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[4][0], frontGrid[4][1], frontGrid[4][2], frontGrid[4][3], frontGrid[4][4], frontGrid[4][5], frontGrid[4][6], frontGrid[4][7], frontGrid[4][8], frontGrid[4][9]);
+    printf("   5  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[5][0], frontGrid[5][1], frontGrid[5][2], frontGrid[5][3], frontGrid[5][4], frontGrid[5][5], frontGrid[5][6], frontGrid[5][7], frontGrid[5][8], frontGrid[5][9]);
+    printf("   6  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[6][0], frontGrid[6][1], frontGrid[6][2], frontGrid[6][3], frontGrid[6][4], frontGrid[6][5], frontGrid[6][6], frontGrid[6][7], frontGrid[6][8], frontGrid[6][9]);
+    printf("   7  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[7][0], frontGrid[7][1], frontGrid[7][2], frontGrid[7][3], frontGrid[7][4], frontGrid[7][5], frontGrid[7][6], frontGrid[7][7], frontGrid[7][8], frontGrid[7][9]);
+    printf("   8  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[8][0], frontGrid[8][1], frontGrid[8][2], frontGrid[8][3], frontGrid[8][4], frontGrid[8][5], frontGrid[8][6], frontGrid[8][7], frontGrid[8][8], frontGrid[8][9]);
+    printf("   9  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[9][0], frontGrid[9][1], frontGrid[9][2], frontGrid[9][3], frontGrid[9][4], frontGrid[9][5], frontGrid[9][6], frontGrid[9][7], frontGrid[9][8], frontGrid[9][9]);
 }
 
 int LetterToNumber() {
@@ -122,41 +137,55 @@ int LetterToNumber() {
     return colonsInNumber;
 }
 
-void jeu() {
+void game() {
+    while (program == 1) {
+        system("cls");
+        title();
+        printf("\n\n\n");
+        printf("O = raté\nX = touché\n\n");
+        grid();
+        printf("\n\n\n");
+
+        printf("Colonne : ");
+        fflush(stdin);
+        scanf("%c", &colonsInChar);
+
+        printf("Ligne : ");
+        fflush(stdin);
+        scanf("%d", &lines);
+
+        LetterToNumber();
 
 
-    system("cls");
-    title();
-    printf("\n\n\n");
-    printf("O = raté\nX = touché\n\n");
-    grid();
-    printf("\n\n\n");
+        if (isspace(gridValues[lines][colonsInNumber])) {
+            frontGrid[lines][colonsInNumber] = 'O';
+            gridValues[lines][colonsInNumber] = 'O';
+        }
+        else if(gridValues[lines][colonsInNumber] == 'X') {
+            frontGrid[lines][colonsInNumber] = 'X';
+        }
+        else if(gridValues[lines][colonsInNumber] == 'O') {
+            frontGrid[lines][colonsInNumber] = 'O';
+        }
 
-    printf("Lettre de la colonne : ");
-    fflush(stdin);
-    scanf("%c", &colonsInChar);
 
-    printf("Chiffre de la ligne : ");
-    fflush(stdin);
-    scanf("%d", &lines);
-
-    LetterToNumber();
-
-    system("\n\nPause");
-/*
-    for(int y = 0; y <9; y++) {
-        for(int x = 0; x < 9; x++) {
-            if(isspace(gridValues[y][x])) {
-                printf("Raté !");
-            } else {
-                printf("Touché");
+        for (int y = 0; y <= 9; y++) {
+            for (int x = 0; x <= 9; x++) {
+               if(gridValues[y][x] == frontGrid[y][x]) {
+                    counter++;
+               }
             }
         }
+        if(counter == 100){
+            printf("Félicitation, tu as gagné\n");
+            program = 0;
+            system("Pause");
+        }
+        else {
+            program = 1;
+        }
     }
-*/
 }
-
-
 
 int choice() {
     printf("Choix : ");
@@ -166,25 +195,33 @@ int choice() {
 }
 
 int main() {
+    while (program == 1) {
+        system("cls");
+        SetConsoleOutputCP(65001);
 
 
-    SetConsoleOutputCP(65001);
+        menu();
 
-    menu();
+        choice();
 
-    choice();
-
-    switch(choix) {
-        case 1:
-            jeu();
-            break;
-        case 2:
-            help();
-            break;
-        default:
-            printf("Veuillez entrer un choix valide.\n");
-        }
+        switch (choix) {
+            case 1:
+                game();
+                break;
+            case 2:
+                help();
+                break;
+            case 3:
+                printf("\nÀ bientôt !\n");
+                system("Pause");
+                program = 0;
+                break;
+            default:
+                break;
+            }
+    }
 
 
     return 0;
+
 }
