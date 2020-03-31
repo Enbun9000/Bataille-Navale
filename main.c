@@ -38,16 +38,11 @@ char colonsInChar;
 int colonsInNumber;
 int lines;
 boolean program = 1;
+boolean loginScreen = 1;
 int counter = 0;
+char logname;
+int score;
 
-
-// TODO - Fix Choice  -----------X
-// TODO - Better game interface ---------X
-// TODO - Search about invisible characters for the boats ---------X
-// TODO - fix the help page -------------X
-// TODO - Win  ---------------
-// TODO - error -------------X
-// TODO - Commentaires
 
 void title() {
     printf("\033[0;36m"); //pour avoir une couleur cyan
@@ -61,8 +56,10 @@ void menu() {
     title();
 
     printf("1. Jouer\n\n");
-    printf("2. Aide\n\n");
-    printf("3. Quitter\n\n\n");
+    printf("2. Authentification\n\n");
+    printf("3. Scores\n\n");
+    printf("4. Aide\n\n");
+    printf("5. Quitter\n\n");
 }
 
 void help() {
@@ -160,12 +157,15 @@ void game() {
         if (isspace(gridValues[lines][colonsInNumber])) {
             frontGrid[lines][colonsInNumber] = 'O';
             gridValues[lines][colonsInNumber] = 'O';
+            score = score - 5;
         }
         else if(gridValues[lines][colonsInNumber] == 'X') {
             frontGrid[lines][colonsInNumber] = 'X';
+            score = score + 10;
         }
         else if(gridValues[lines][colonsInNumber] == 'O') {
             frontGrid[lines][colonsInNumber] = 'O';
+
         }
 
 
@@ -187,6 +187,17 @@ void game() {
     }
 }
 
+void scores() {
+    system("cls");
+    title();
+
+    printf("Voici la page ou sont affichés les scores.\n\n");
+    printf("SCORES : \n\n");
+
+    system("Pause");
+
+}
+
 int choice() {
     printf("Choix : ");
     fflush(stdin);
@@ -194,8 +205,55 @@ int choice() {
     return choix;
 }
 
+void login() {
+    /*
+    while(loginScreen == 1) {
+        system("cls");
+
+        FILE *read_file = fopen("logins.txt", "r");
+        FILE *write_file = fopen("logins.txt", "w");;
+
+        title();
+
+        char singleLine[150];
+
+        printf("Voici la page d'authentification, \n");
+
+        printf("Veuillez entrer votre nom ici :");
+        scanf("%c", &logname);
+
+        fprintf(write_file, "%c\n", logname);
+        fclose(write_file);
+
+
+
+        if (read_file) {
+            while ((logname = getc(read_file)) != EOF){
+                putchar(logname);
+            }
+            fclose(read_file);
+        }
+
+
+        for(int i = 0; i != feof; i++) {
+            fgets(singleLine, 150, read_file);
+            if(singleLine != logname) {
+
+            }
+        }
+
+    fclose(write_file);
+
+        //system("\n\nPause");
+
+        loginScreen = 0;
+    }
+    */
+}
+
+
 int main() {
-    while (program == 1) {
+    do  {
         system("cls");
         SetConsoleOutputCP(65001);
 
@@ -209,9 +267,15 @@ int main() {
                 game();
                 break;
             case 2:
-                help();
+                login();
                 break;
             case 3:
+                scores();
+                break;
+            case 4:
+                help();
+                break;
+            case 5:
                 printf("\nÀ bientôt !\n");
                 system("Pause");
                 program = 0;
@@ -219,7 +283,7 @@ int main() {
             default:
                 break;
             }
-    }
+    } while (program == 1);
 
 
     return 0;
