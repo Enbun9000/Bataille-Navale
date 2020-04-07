@@ -1,3 +1,10 @@
+/**
+ * Project : Bataille navale
+ * Author: Benjamin Muminovic
+ * Version : 0.5
+ * Description :
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -5,6 +12,8 @@
 
 #pragma execution_character_set( "utf-8" )
 
+
+// La grille qui est affiché sur la page du jeu
 char frontGrid[10][10] =
         {
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -18,7 +27,7 @@ char frontGrid[10][10] =
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
         };
-
+// La grille cachée contenant les position des bateaux
 char gridValues[10][10] =
         {
                           {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -33,17 +42,16 @@ char gridValues[10][10] =
                           {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
         };
 
-int choix;
+// réserve à variable
 char colonsInChar;
 int colonsInNumber;
+int choix;
 int lines;
 boolean program = 1;
-boolean loginScreen = 1;
-int counter = 0;
-char logname;
-int score;
+char logname = ' ';
 
 
+//Fonction affichant le titre, presente a chaque debut de page
 void title() {
     printf("\033[0;36m"); //pour avoir une couleur cyan
     printf("\n<----------------------->\n");
@@ -51,9 +59,25 @@ void title() {
     printf("<----------------------->\n\n\n");
     printf("\033[0m"); //Pour remmetre la couleur par default
 }
+//Cette fonction recupere les score a la fin d'une partie et les ecrit dans le fichier score
+void scores(int valeurScore) {
+    FILE * write_file = fopen("scores.txt", "r+");
+    fprintf(write_file, "%s : %d pts\n", &logname, valeurScore);
+    fclose(write_file);
+}
 
 void menu() {
     title();
+    // affiche le nom de l'utilisateur (en couleur verte) si il est authentifié
+    if(logname != ' ') {
+        printf("Vous êtes authentifié en tant que ");
+        printf("\033[0;32m");
+        printf("%s\n\n", &logname);
+        printf("\033[0m");
+    }
+    else {  // Sinon affiche ce message
+        printf("Vous n'êtes pas authentifié\n\n");
+    }
 
     printf("1. Jouer\n\n");
     printf("2. Authentification\n\n");
@@ -61,7 +85,7 @@ void menu() {
     printf("4. Aide\n\n");
     printf("5. Quitter\n\n");
 }
-
+//La fonction affichant la page d'aide du jeu
 void help() {
     system("cls");
     title();
@@ -83,8 +107,10 @@ void help() {
     printf("Vous gagnez lorsque tous les navires sont coulés.\n\n");
 
     system("Pause");
-}
 
+
+}
+// Fonction contenant une grande série de printf() pour afficher la grille
 void grid() {
     printf("       A   B   C   D   E   F   G   H   I   J      \n");
     printf("   0  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[0][0], frontGrid[0][1], frontGrid[0][2], frontGrid[0][3], frontGrid[0][4], frontGrid[0][5], frontGrid[0][6], frontGrid[0][7], frontGrid[0][8], frontGrid[0][9]);
@@ -99,6 +125,7 @@ void grid() {
     printf("   9  [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c] [%c]     \n", frontGrid[9][0], frontGrid[9][1], frontGrid[9][2], frontGrid[9][3], frontGrid[9][4], frontGrid[9][5], frontGrid[9][6], frontGrid[9][7], frontGrid[9][8], frontGrid[9][9]);
 }
 
+// Cette fonction convertit les lettres des colonnes et les transforme en chiffres pour qu'ils puissent être manipulés
 int LetterToNumber() {
     if(colonsInChar == 'A' || colonsInChar == 'a') {
         colonsInNumber = 0;
@@ -134,15 +161,34 @@ int LetterToNumber() {
     return colonsInNumber;
 }
 
+// Page d'authentification
+void login() {
+    system("cls");
+
+    title();
+    printf("Voici la page d'authentification, \n");
+
+    printf("Veuillez entrer votre nom ici :");
+    // L'entrée de l'utilisateur est affichée en couleur
+    printf("\033[0;32m");
+    scanf("%s", &logname);
+    printf("\033[0m");
+}
+// Fonction dans laquelle se déroule toute la phase de jeu
 void game() {
-    while (program == 1) {
+
+    int score = 0;
+    int counter = 0;
+    boolean GameProgram = 1;
+
+    while (GameProgram == 1) {
         system("cls");
         title();
         printf("\n\n\n");
         printf("O = raté\nX = touché\n\n");
         grid();
         printf("\n\n\n");
-
+        // Pour récupérer les entrées de l'utilisateur
         printf("Colonne : ");
         fflush(stdin);
         scanf("%c", &colonsInChar);
@@ -153,51 +199,56 @@ void game() {
 
         LetterToNumber();
 
-
-        if (isspace(gridValues[lines][colonsInNumber])) {
-            frontGrid[lines][colonsInNumber] = 'O';
-            gridValues[lines][colonsInNumber] = 'O';
-            score = score - 5;
-        }
-        else if(gridValues[lines][colonsInNumber] == 'X') {
-            frontGrid[lines][colonsInNumber] = 'X';
-            score = score + 10;
-        }
-        else if(gridValues[lines][colonsInNumber] == 'O') {
-            frontGrid[lines][colonsInNumber] = 'O';
-
-        }
-
-
-        for (int y = 0; y <= 9; y++) {
-            for (int x = 0; x <= 9; x++) {
-               if(gridValues[y][x] == frontGrid[y][x]) {
+        if(lines <= 9 && lines >= 0) {   // condition pour eviter que le programme plante lorsque l'on rentre une valeur supérieure à 9
+            if (isspace(gridValues[lines][colonsInNumber])) {
+                frontGrid[lines][colonsInNumber] = 'O';
+                gridValues[lines][colonsInNumber] = 'O';
+                score = score - 20;
+            } else if (gridValues[lines][colonsInNumber] == 'X') {
+                if(frontGrid[lines][colonsInNumber] != 'X') {
                     counter++;
-               }
+                    score = score + 150;
+                }
+                frontGrid[lines][colonsInNumber] = 'X';
+            } else if (gridValues[lines][colonsInNumber] == 'O') {
+                frontGrid[lines][colonsInNumber] = 'O';
             }
         }
-        if(counter == 100){
-            printf("Félicitation, tu as gagné\n");
-            program = 0;
+
+        if(counter == 17){  // si toutes les cases contenant un bout de bateau on été trouvées
+            printf("\nFélicitation, tu as gagné\n");
             system("Pause");
-        }
-        else {
-            program = 1;
+            scores(score);
+            GameProgram = 0;
+            // Affiche la page d'authentification si le joueur n'est pas déjà authentifié
+            if(logname == ' ') {
+                login();
+            }
         }
     }
 }
-
-void scores() {
+// Fonction affichant la page des scores
+void scorePage() {
     system("cls");
     title();
 
-    printf("Voici la page ou sont affichés les scores.\n\n");
-    printf("SCORES : \n\n");
+    FILE * read_file = fopen("scores.txt", "r");  // on ouvre le fichier "score.txt" en mode lecture
 
-    system("Pause");
+    printf("Voici la page où sont affichés les scores.\n\n");
+    printf("SCORES : \n\n");
+    //Cette partie lit chaque ligne de scores.txt et affiche ces lignes dans la page
+    char buf[150];
+    while(!feof(read_file)) {
+        fgets(buf, 150, read_file);
+        puts(buf);
+    }
+
+    fclose(read_file);
+
+    system("\n\nPause");
 
 }
-
+// Fonction donnant la valeur de la variable "choix"
 int choice() {
     printf("Choix : ");
     fflush(stdin);
@@ -205,58 +256,11 @@ int choice() {
     return choix;
 }
 
-void login() {
-    /*
-    while(loginScreen == 1) {
-        system("cls");
-
-        FILE *read_file = fopen("logins.txt", "r");
-        FILE *write_file = fopen("logins.txt", "w");;
-
-        title();
-
-        char singleLine[150];
-
-        printf("Voici la page d'authentification, \n");
-
-        printf("Veuillez entrer votre nom ici :");
-        scanf("%c", &logname);
-
-        fprintf(write_file, "%c\n", logname);
-        fclose(write_file);
-
-
-
-        if (read_file) {
-            while ((logname = getc(read_file)) != EOF){
-                putchar(logname);
-            }
-            fclose(read_file);
-        }
-
-
-        for(int i = 0; i != feof; i++) {
-            fgets(singleLine, 150, read_file);
-            if(singleLine != logname) {
-
-            }
-        }
-
-    fclose(write_file);
-
-        //system("\n\nPause");
-
-        loginScreen = 0;
-    }
-    */
-}
-
 
 int main() {
-    do  {
+    SetConsoleOutputCP(65001);
+    do {
         system("cls");
-        SetConsoleOutputCP(65001);
-
 
         menu();
 
@@ -270,21 +274,21 @@ int main() {
                 login();
                 break;
             case 3:
-                scores();
+                scorePage();
                 break;
             case 4:
                 help();
                 break;
             case 5:
-                printf("\nÀ bientôt !\n");
+                printf("\nÀ bientôt !\n\n");
                 system("Pause");
                 program = 0;
                 break;
             default:
                 break;
-            }
-    } while (program == 1);
-
+        }
+    // Permet de revenir au menu principal apres l'affichage de chaque page et
+    }while(program != 0);
 
     return 0;
 
