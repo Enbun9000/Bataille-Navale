@@ -1,14 +1,13 @@
 /**
  * Project : Bataille navale
  * Author: Benjamin Muminovic
- * Version : 0.5
- * Description :
+ * Version : 1.0
+ * Description : Jeu de bataille navale dans un environnement de console de commande
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include <ctype.h>
 
 #pragma execution_character_set( "utf-8" )
 
@@ -27,19 +26,20 @@ char frontGrid[10][10] =
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
         };
-// La grille cachée contenant les position des bateaux
+
+// La grille cachée contenant les position des bateaux, les espaces sont remplacées par les valeur des fichiers dans la fonction readGridfile()
 char gridValues[10][10] =
         {
-                          {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', ' '},
-                          {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', ' ', ' ', ' ', 'X', 'X', 'X', 'X', ' ', ' '},
-                          {' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', 'X', ' ', ' ', 'X', 'X', ' ', ' ', ' ', ' '},
-                          {' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                          {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+                          {'X', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'},
+                          {'X', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'},
+                          {'X', 'O', 'X', 'X', 'X', 'O', 'O', 'O', 'O', 'O'},
+                          {'O', 'O', 'O', 'O', 'O', 'O', 'O', 'X', 'O', 'O'},
+                          {'O', 'O', 'O', 'O', 'O', 'O', 'O', 'X', 'O', 'O'},
+                          {'O', 'O', 'O', 'O', 'X', 'X', 'O', 'X', 'O', 'O'},
+                          {'O', 'O', 'O', 'O', 'O', 'O', 'O', 'X', 'O', 'O'},
+                          {'O', 'O', 'O', 'O', 'O', 'O', 'O', 'X', 'O', 'O'},
+                          {'O', 'O', 'X', 'X', 'X', 'X', 'O', 'O', 'O', 'O'},
+                          {'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'},
         };
 
 // réserve à variable
@@ -47,7 +47,7 @@ char colonsInChar;
 int colonsInNumber;
 int choix;
 int lines;
-boolean program = 1;
+
 char logname = ' ';
 
 
@@ -62,9 +62,33 @@ void title() {
 //Cette fonction recupere les score a la fin d'une partie et les ecrit dans le fichier score
 void scores(int valeurScore) {
     FILE * write_file = fopen("scores.txt", "r+");
+    // Pour décaler le pointer à la fin (permettant de ne pas effacer les scores déjà présents)
+    fseek( write_file, 0, SEEK_END );
     fprintf(write_file, "%s : %d pts\n", &logname, valeurScore);
     fclose(write_file);
 }
+// Fonction qui aurait servi a récupérer les valeures de gridValues et a remplacer celles du tableau (ne fonctionait pas alors mit en commentaire, aucune correction faute de temps)
+/*
+void readGridFile() {
+    FILE * read_grid = fopen("grid1.txt", "r");
+
+    int bytes = 0;
+
+    int  c;
+    for(int y = 0;y <= 9; y++) {
+        for(int x = 0;x <= 9; x++) {
+            fseek(read_grid, bytes, SEEK_SET );
+            c = fgetc(read_grid);
+            bytes = bytes + 1;
+            if(bytes == 10) {
+                bytes = 0;
+            }
+            gridValues[y][x] = c;
+        }
+    }
+    fclose(read_grid);
+}
+ */
 
 void menu() {
     title();
@@ -177,41 +201,44 @@ void login() {
 // Fonction dans laquelle se déroule toute la phase de jeu
 void game() {
 
-    int score = 0;
-    int counter = 0;
+    int score = 0, counter = 0;
     boolean GameProgram = 1;
+
+    //readGridFile(); la fonction aurait été appelée ici
 
     while (GameProgram == 1) {
         system("cls");
         title();
-        printf("\n\n\n");
+        printf("\n");
         printf("O = raté\nX = touché\n\n");
         grid();
         printf("\n\n\n");
         // Pour récupérer les entrées de l'utilisateur
         printf("Colonne : ");
         fflush(stdin);
+        printf("\033[0;32m");
         scanf("%c", &colonsInChar);
+        printf("\033[0m");
 
         printf("Ligne : ");
         fflush(stdin);
+        printf("\033[0;32m");
         scanf("%d", &lines);
+        printf("\033[0m");
 
         LetterToNumber();
 
         if(lines <= 9 && lines >= 0) {   // condition pour eviter que le programme plante lorsque l'on rentre une valeur supérieure à 9
-            if (isspace(gridValues[lines][colonsInNumber])) {
+            // Compare l'entrée du joueur a la grille des valeurs, réduit le score si la valeur de la position est un "O" et rajoute des points si c'est un "X"
+            if (gridValues[lines][colonsInNumber] == 'O') {
                 frontGrid[lines][colonsInNumber] = 'O';
-                gridValues[lines][colonsInNumber] = 'O';
                 score = score - 20;
             } else if (gridValues[lines][colonsInNumber] == 'X') {
-                if(frontGrid[lines][colonsInNumber] != 'X') {
+                if (frontGrid[lines][colonsInNumber] != 'X') {
                     counter++;
                     score = score + 150;
                 }
                 frontGrid[lines][colonsInNumber] = 'X';
-            } else if (gridValues[lines][colonsInNumber] == 'O') {
-                frontGrid[lines][colonsInNumber] = 'O';
             }
         }
 
@@ -219,7 +246,7 @@ void game() {
             printf("\nFélicitation, tu as gagné\n");
             system("Pause");
             scores(score);
-            GameProgram = 0;
+            GameProgram = 0;  // la boucle se casse
             // Affiche la page d'authentification si le joueur n'est pas déjà authentifié
             if(logname == ' ') {
                 login();
@@ -256,10 +283,10 @@ int choice() {
     return choix;
 }
 
-
 int main() {
     SetConsoleOutputCP(65001);
-    do {
+    boolean program = 1;
+    do { // Permet de revenir au menu principal après l'affichage de chaque page et gère les entrées incorrectes
         system("cls");
 
         menu();
@@ -287,7 +314,6 @@ int main() {
             default:
                 break;
         }
-    // Permet de revenir au menu principal apres l'affichage de chaque page et
     }while(program != 0);
 
     return 0;
